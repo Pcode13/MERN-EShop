@@ -1,7 +1,7 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const productSchema = new mongoose.Schema({
-   name: {
+const productSchema = mongoose.Schema({
+    name: {
         type: String,
         required: true,
     },
@@ -55,6 +55,15 @@ const productSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     },
+})
+
+productSchema.virtual('id').get(function () {
+    return this._id.toHexString();
 });
 
-module.exports = mongoose.model("Product", productSchema);
+productSchema.set('toJSON', {
+    virtuals: true,
+});
+
+
+exports.Product = mongoose.model('Product', productSchema);
