@@ -3,56 +3,28 @@ const app = express();
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
-const port = 3000;
+const cors = require("cors");
 
 require("dotenv/config");
-
-const api = process.env.APP_URL;
+const port = 3000;
 
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
 app.use(morgan("tiny"));
+app.options("*", cors());
 
-const productSchema = new mongoose.Schema({
-  name: String,
-  price: Number,
-  image: String,
-  countInStock: {
-    type: Number,
-    required: true,
-  },
-});
+//Routes
+const categoriesRoutes = require("./routes/categories");
+const productsRoutes = require("./routes/products");
+const usersRoutes = require("./routes/users");
+const ordersRoutes = require("./routes/orders");
 
-const Product = mongoose.model("Product", productSchema);
+const api = process.env.APP_URL;
 
-// Sample route
-app.get(`${api}/products`, async (req, res) => {
-  const productList = await Product.find();
-  if (!productList) {
-    res.status(500).json({ success: false });
-  }
-  res.send(productList);
-});
-
-app.post(`${api}/products`, (req, res) => {
-  const product = new Product({
-    name: req.body.name,
-    price: req.body.price,
-    image: req.body.image,
-    countInStock: req.body.countInStock,
-  });
-  product
-    .save()
-    .then((createproduct) => {
-      res.status(201).json(createproduct);
-    })
-    .catch((err) => {
-      res.status(500).json({
-        error: err,
-        success: false,
-      });
-    });
-});
+app.use(`${api}/categories`, categoriesRoutes);
+app.use(`${api}/products`, productsRoutes);
+app.use(`${api}/users`, usersRoutes);
+app.use(`${api}/orders`, ordersRoutes);
 
 // Connect to MongoDB
 mongoose
