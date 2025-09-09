@@ -8,10 +8,17 @@ const cors = require("cors");
 require("dotenv/config");
 const port = 3000;
 
+const corsOptions = {
+  origin: "*", // or specific domains ["http://localhost:3000"]
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+};
+
+app.use(cors(corsOptions));
+
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
 app.use(morgan("tiny"));
-app.options("*", cors());
 
 //Routes
 const categoriesRoutes = require("./routes/categories");
