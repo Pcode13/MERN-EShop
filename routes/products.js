@@ -101,15 +101,25 @@ router.delete("/:id", (req, res) => {
     });
 });
 
-router.get(`/get/count`, async (req, res) => {
-  const productCount = await Product.countDocuments((count) => count);
+// router.get(`/get/count`, async (req, res) => {
+//   const productCount = await Product.countDocuments((count) => count);
 
-  if (!productCount) {
-    res.status(500).json({ success: false });
+//   if (!productCount) {
+//     res.status(500).json({ success: false });
+//   }
+//   res.send({
+//     productCount: productCount,
+//   });
+// });
+
+router.get(`/get/count`, async (req, res) => {
+  try {
+    const productCount = await Product.countDocuments();
+
+    res.status(200).send({ productCount });
+  } catch (err) {
+    res.status(500).json({ success: false, error: err });
   }
-  res.send({
-    productCount: productCount,
-  });
 });
 
 router.get(`/get/featured/:count`, async (req, res) => {
