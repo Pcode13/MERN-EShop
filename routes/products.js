@@ -29,28 +29,31 @@ router.get(`/:id`, async (req, res) => {
 });
 
 router.post(`/`, async (req, res) => {
-  const category = await Category.findById(req.body.category);
-  if (!category) return res.status(400).send("Invalid Category");
+  try {
+    const category = await Category.findById(req.body.category);
+    if (!category) return res.status(400).send("Invalid Category");
 
-  let product = new Product({
-    name: req.body.name,
-    description: req.body.description,
-    richDescription: req.body.richDescription,
-    image: req.body.image,
-    brand: req.body.brand,
-    price: req.body.price,
-    category: req.body.category,
-    countInStock: req.body.countInStock,
-    rating: req.body.rating,
-    numReviews: req.body.numReviews,
-    isFeatured: req.body.isFeatured,
-  });
+    let product = new Product({
+      name: req.body.name,
+      description: req.body.description,
+      richDescription: req.body.richDescription,
+      image: req.body.image,
+      brand: req.body.brand,
+      price: req.body.price,
+      category: req.body.category,
+      countInStock: req.body.countInStock,
+      rating: req.body.rating,
+      numReviews: req.body.numReviews,
+      isFeatured: req.body.isFeatured,
+    });
 
-  product = await product.save();
+    product = await product.save();
 
-  if (!product) return res.status(500).send("The product cannot be created");
-
-  res.send(product);
+    res.status(201).send(product);
+  } catch (err) {
+    console.error("❌ Product creation failed:", err.message);
+    res.status(500).json({ success: false, error: err.message });
+  }
 });
 
 router.put("/:id", async (req, res) => {
@@ -100,17 +103,6 @@ router.delete("/:id", (req, res) => {
       return res.status(500).json({ success: false, error: err });
     });
 });
-
-// router.get(`/get/count`, async (req, res) => {
-//   const productCount = await Product.countDocuments((count) => count);
-
-//   if (!productCount) {
-//     res.status(500).json({ success: false });
-//   }
-//   res.send({
-//     productCount: productCount,
-//   });
-// });
 
 router.get(`/get/count`, async (req, res) => {
   try {
