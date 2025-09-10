@@ -4,6 +4,8 @@ const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const authJwt = require("./helpers/jwt");
+const errorhandler = require("./helpers/error-handler");
 
 require("dotenv/config");
 const port = 3000;
@@ -13,12 +15,12 @@ const corsOptions = {
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
-
 app.use(cors(corsOptions));
 
 // Middleware to parse JSON bodies
 app.use(bodyParser.json());
 app.use(morgan("tiny"));
+app.use(authJwt());
 
 //Routes
 const categoriesRoutes = require("./routes/categories");
@@ -32,6 +34,7 @@ app.use(`${api}/categories`, categoriesRoutes);
 app.use(`${api}/products`, productsRoutes);
 app.use(`${api}/users`, usersRoutes);
 app.use(`${api}/orders`, ordersRoutes);
+app.use(errorhandler)
 
 // Connect to MongoDB
 mongoose
